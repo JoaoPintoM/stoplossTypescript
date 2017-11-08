@@ -1,1 +1,1 @@
-const bus = ['positionAquiered', 'priceUpdated', 'priceUpdated', 'getOutPosition'];
+const bus = ['positionAquiered', 'priceRaised', 'priceRaised', 'getOutPosition'];

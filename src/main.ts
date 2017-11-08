@@ -15,6 +15,11 @@ interface MovingUp {
   timestamp: number;
 }
 
+interface ThresholdUpdated {
+  kind: 'ThresholdUpdated';
+  threshold: number;
+}
+
 interface SendMeIn {
   kind: 'SendMeIn';
   second: number;
@@ -30,10 +35,20 @@ interface RemoveFromFifteenSecondWindow {
   price: number;
 }
 
-type Event = SendMeIn | MovingUp | PositionAcquired;
-type Command = RemoveFromTenSecondWindow | RemoveFromFifteenSecondWindow;
+interface State {
+  kind: 'State';
+  acquisitionPrice: number;
+  targetPrice: number;
+}
+
+interface SellPosition {
+  kind: 'SellPosition';
+  price: number;
+}
+
+type Event = SendMeIn | PositionAcquired | ThresholdUpdated;
+type Command = RemoveFromTenSecondWindow | RemoveFromFifteenSecondWindow | MovingUp | SellPosition;
 
 interface IBus {
-  publish(message: Event);
+  publish(message: Event): Command[];
 }
->>>>>>> master
