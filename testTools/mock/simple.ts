@@ -1,8 +1,3 @@
-export const state: State = {
-  kind: 'State',
-  acquisitionPrice: 1,
-  targetPrice: 0.9,
-};
 
 export const pa: PositionAcquired = {
   kind: 'PositionAcquired',
