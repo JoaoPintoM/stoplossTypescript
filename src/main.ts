@@ -1,3 +1,7 @@
+interface Price {
+  price: number;
+  timestamp: number;
+}
 
 interface PositionAcquired {
   kind: 'PositionAcquired';

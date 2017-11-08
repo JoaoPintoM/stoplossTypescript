@@ -1,17 +1,27 @@
+import { max, min } from 'lodash';
 import { curry, isArray } from 'lodash/fp';
 
 export const when = curry((bus: Ibus, event: Event) => {
-  const cb = () => bus.publish(event);
+  const cb = () => bus.publishEvent(event);
 
   return {
     expectCommand: (commandList: Command[]) => {
       const events: Command[] = cb();
       it('should equal expected', () => {
-        expect(events).toEqual(commandList);
+        expect(events).toEqual(expect.arrayContaining(commandList));
       });
     },
   };
 });
+
+const removePrice = (list: number[], price: number): number[] => {
+  const index = list.indexOf(price);
+  if (index > -1) {
+    return list.splice(index, 1);
+  }
+
+  return list;
+};
 
 export function given(events: Event[]): IBus {
   const fakeBus = new FakeBus();
@@ -23,12 +33,21 @@ export function given(events: Event[]): IBus {
 }
 
 export class FakeBus implements IBus {
-  private acquisitionPrice: number;
+  private isSold = false;
+  private targetPrice: number;
   private sellList: number[];
   private keepList: number[];
 
   constructor(price: number) {
-    this.acquisitionPrice = price;
+    this.targetPrice = price;
+  }
+
+  doWeSell(price: number): boolean {
+    return max(this.sellList) < price;
+  }
+
+  movingUpPrice(price: number): number {
+    return min(this.keepList) > price;
   }
 
   publishEvent(message: Event): Command[] {
@@ -41,6 +60,26 @@ export class FakeBus implements IBus {
           { kind: 'RemoveFromFifteenSecondWindow' },
           { kind: 'RemoveFromTenSecondWindow' },
         ];
+      case 'RemoveFromTenSecondWindow':
+        if (this.sold) {
+          return [];
+        }
+        removePrice(this.sellList, message.price);
+        if (this.doWeSell(message.price)) {
+          this.isSold = true;
+
+          return [{ kind: 'SellPosition' }];
+        }
+
+        return [];
+      case 'RemoveFromFifteenSecondWindow':
+        removePrice(this.keepList, message.price);
+        const movingUpPrice: number = this.movingUpPrice(message.price);
+        if (movingUpPrice > this.targetPrice) {
+          return [{ kind: 'MovingUp', price: movingUpPrice }];
+        }
+
+        return [];
       default:
         return [];
     }

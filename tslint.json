@@ -8,6 +8,7 @@
     "tslint-microsoft-contrib"
   ],
   "rules": {
+    "ordered-imports": false,
     "member-access": false,
     "interface-name": false,
     "mocha-no-side-effect-code": false,
