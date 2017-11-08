@@ -16,8 +16,12 @@ describe('priceUpdated', () => {
     .expectCommand([removeFrom10AfterRaise, removeFrom15AfterRaise]);
 });
 
-describe('removefrom10', () => {
+describe('removefrom10 raise', () => {
   given([pa, priceRaised]).when(removeFrom10AfterRaise).expectCommand([]);
+});
+
+describe('removefrom10 fallen', () => {
+  given([pa, priceFallen]).when(removeFrom10AfterRaise).expectCommand([sell]);
 });
 
 describe('removeFrom15AfterRaise', () => {
@@ -27,7 +31,7 @@ describe('removeFrom15AfterRaise', () => {
 });
 
 describe('removeFrom15AfterFallen', () => {
-  given([pa, priceRaised, priceFallen])
-    .when(removeFrom15AfterFallen)
-    .expectCommand([sell]);
+  given([pa, priceFallen])
+    .when(removeFrom15AfterRaise)
+    .expectCommand([]);
 });

@@ -26,6 +26,9 @@ const removePrice = (list: number[], price: number): number[] => {
 
 export function given(events: Event[]): IBus {
   const fakeBus = new FakeBus();
+  events.forEach(event => {
+    fakeBus.publishEvent(event);
+  });
   //fakeBus.clear();
 
   return {
@@ -39,45 +42,47 @@ export class FakeBus implements IBus {
   private sellList: number[];
   private keepList: number[];
 
-  constructor(price: number) {
-    this.targetPrice = price;
+  constructor() {
     this.sellList = [];
     this.keepList = [];
   }
 
-  doWeSell(price: number): boolean {
-    return max(this.sellList) < price;
+  sellPrice(): number {
+    return max(this.sellList);
   }
 
-  movingUpPrice(price: number): number {
-    return min(this.keepList) > price;
+  movingUpPrice(): number {
+    return min(this.keepList);
   }
 
   publishEvent(message: Event): Command[] {
     switch (message.kind) {
+      case 'PositionAcquired':
+        this.targetPrice = message.price;
+
+        return [];
       case 'PriceUpdated':
         this.sellList.push(message.price);
         this.keepList.push(message.price);
 
         return [
           { kind: 'RemoveFromFifteenSecondWindow', price: message.price },
-          { kind: 'RemoveFromTenSecondWindow', price: message.price},
+          { kind: 'RemoveFromTenSecondWindow', price: message.price },
         ];
       case 'RemoveFromTenSecondWindow':
-        if (this.sold) {
+        if (this.isSold) {
           return [];
         }
+        const sellPrice: number = this.sellPrice();
         removePrice(this.sellList, message.price);
-        if (this.doWeSell(message.price)) {
-          this.isSold = true;
-
-          return [{ kind: 'SellPosition' }];
+        if (sellPrice < this.targetPrice) {
+          return [{ kind: 'SellPosition', price: sellPrice }];
         }
 
         return [];
       case 'RemoveFromFifteenSecondWindow':
+        const movingUpPrice: number = this.movingUpPrice();
         removePrice(this.keepList, message.price);
-        const movingUpPrice: number = this.movingUpPrice(message.price);
         if (movingUpPrice > this.targetPrice) {
           return [{ kind: 'MovingUp', price: movingUpPrice }];
         }
