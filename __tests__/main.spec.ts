@@ -1,26 +1,33 @@
-import { given } from './helper';
-import { pa, removeFrom10, removeFrom15, priceFallen, removeFrom10, priceRaised, sell } from './mock/simple';
+import { given } from '../testTools/helper';
+import {
+  pa,
+  movingUp,
+  removeFrom10AfterRaise,
+  removeFrom15AfterRaise,
+  priceFallen,
+  removeFrom10AfterRaise,
+  priceRaised,
+  sell, removeFrom15AfterFallen,
+} from '../testTools/mock/simple';
 
 describe('priceUpdated', () => {
   given([pa])
     .when(priceRaised)
-    .expectCommand([removeFrom10, removeFrom15]);
+    .expectCommand([removeFrom10AfterRaise, removeFrom15AfterRaise]);
 });
 
 describe('removefrom10', () => {
-  given([pa, priceRaised])
-    .when(removeFrom10)
-    .expectCommand([]);
+  given([pa, priceRaised]).when(removeFrom10AfterRaise).expectCommand([]);
 });
 
-describe('removeFrom15', () => {
+describe('removeFrom15AfterRaise', () => {
   given([pa, priceRaised])
-    .when(removeFrom15)
+    .when(removeFrom15AfterRaise)
     .expectCommand([movingUp]);
 });
 
-describe('removeFrom10', () => {
+describe('removeFrom15AfterFallen', () => {
   given([pa, priceRaised, priceFallen])
-    .when(removeFrom10)
+    .when(removeFrom15AfterFallen)
     .expectCommand([sell]);
 });

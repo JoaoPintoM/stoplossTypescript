@@ -19,15 +19,32 @@ export const priceFallen: PriceUpdated = {
   price: 0.5,
 };
 
-export const removeFrom10: RemoveFromTenSecondWindow = {
+export const removeFrom10AfterRaise: RemoveFromTenSecondWindow = {
   kind: 'RemoveFromTenSecondWindow',
+  price: 1.5,
 };
 
-export const removeFrom15: RemoveFromFifteenSecondWindow = {
+export const removeFrom15AfterRaise: RemoveFromFifteenSecondWindow = {
   kind: 'RemoveFromFifteenSecondWindow',
+  price: 1.5,
+};
+
+export const removeFrom10AfterFallen: RemoveFromTenSecondWindow = {
+  kind: 'RemoveFromTenSecondWindow',
+  price: 0.5,
+};
+
+export const removeFrom15AfterFallen: RemoveFromFifteenSecondWindow = {
+  kind: 'RemoveFromFifteenSecondWindow',
+  price: 0.5,
 };
 
 export const sell: SellPosition = {
   kind: 'SellPosition',
   price: 0.5,
+};
+
+export const movingUp: MovingUp = {
+  kind: 'MovingUp',
+  price: 1.5,
 };

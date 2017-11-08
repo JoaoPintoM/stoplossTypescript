@@ -1,5 +1,6 @@
 import { max, min } from 'lodash';
 import { curry, isArray } from 'lodash/fp';
+import { Event } from '../src/main';
 
 export const when = curry((bus: Ibus, event: Event) => {
   const cb = () => bus.publishEvent(event);
@@ -25,7 +26,7 @@ const removePrice = (list: number[], price: number): number[] => {
 
 export function given(events: Event[]): IBus {
   const fakeBus = new FakeBus();
-  fakeBus.clear();
+  //fakeBus.clear();
 
   return {
     when: when(fakeBus),
@@ -40,6 +41,8 @@ export class FakeBus implements IBus {
 
   constructor(price: number) {
     this.targetPrice = price;
+    this.sellList = [];
+    this.keepList = [];
   }
 
   doWeSell(price: number): boolean {
@@ -57,8 +60,8 @@ export class FakeBus implements IBus {
         this.keepList.push(message.price);
 
         return [
-          { kind: 'RemoveFromFifteenSecondWindow' },
-          { kind: 'RemoveFromTenSecondWindow' },
+          { kind: 'RemoveFromFifteenSecondWindow', price: message.price },
+          { kind: 'RemoveFromTenSecondWindow', price: message.price},
         ];
       case 'RemoveFromTenSecondWindow':
         if (this.sold) {
@@ -86,6 +89,7 @@ export class FakeBus implements IBus {
   }
 
   clear() {
+    this.isSold = false;
     this.sellList = [];
     this.keepList = [];
   }
