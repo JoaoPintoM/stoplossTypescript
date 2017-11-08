@@ -8,6 +8,7 @@
     "tslint-microsoft-contrib"
   ],
   "rules": {
+    "member-access": false,
     "interface-name": false,
     "mocha-no-side-effect-code": false,
     "missing-jsdoc": false,
@@ -23,7 +24,7 @@
       }
     ],
     "typedef": [
-      true,
+      false,
       "parameter",
       "arrow-parameter",
       "property-declaration",

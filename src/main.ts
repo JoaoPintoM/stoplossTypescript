@@ -50,5 +50,5 @@ type Event = SendMeIn | PositionAcquired | ThresholdUpdated;
 type Command = RemoveFromTenSecondWindow | RemoveFromFifteenSecondWindow | MovingUp | SellPosition;
 
 interface IBus {
-  publish(message: Event): Command[];
+  publishEvent(message: Event): Command[];
 }

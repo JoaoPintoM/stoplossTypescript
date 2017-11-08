@@ -1,31 +1,53 @@
 import { curry, isArray } from 'lodash/fp';
 
-export const when = curry((state: State, command: Command) => {
-  const cb = () => decide(command, state);
+export const when = curry((bus: Ibus, event: Event) => {
+  const cb = () => bus.publish(event);
+
   return {
-    expectEvents: (eventList: Event[]) => {
-      const events: Event[] = cb();
+    expectCommand: (commandList: Command[]) => {
+      const events: Command[] = cb();
       it('should equal expected', () => {
-        expect(events).toEqual(eventList);
-      });
-    },
-    expectError: (expectedError?: any) => {
-      it('should throw an error', () => {
-        expect(cb).toThrowError(expectedError);
+        expect(events).toEqual(commandList);
       });
     },
   };
 });
 
-export function given(Event[]) {
-  let pastEvents: Event[];
-  if (!isArray(e)) {
-    pastEvents = [e];
-  } else {
-    pastEvents = e;
-  }
-  const state: State = pastEvents.reduce(evolve, initPollState);
+export function given(events: Event[]): IBus {
+  const fakeBus = new FakeBus();
+  fakeBus.clear();
+
   return {
-    when: when(state),
+    when: when(fakeBus),
   };
+}
+
+export class FakeBus implements IBus {
+  private acquisitionPrice: number;
+  private sellList: number[];
+  private keepList: number[];
+
+  constructor(price: number) {
+    this.acquisitionPrice = price;
+  }
+
+  publishEvent(message: Event): Command[] {
+    switch (message.kind) {
+      case 'PriceUpdated':
+        this.sellList.push(message.price);
+        this.keepList.push(message.price);
+
+        return [
+          { kind: 'RemoveFromFifteenSecondWindow' },
+          { kind: 'RemoveFromTenSecondWindow' },
+        ];
+      default:
+        return [];
+    }
+  }
+
+  clear() {
+    this.sellList = [];
+    this.keepList = [];
+  }
 }

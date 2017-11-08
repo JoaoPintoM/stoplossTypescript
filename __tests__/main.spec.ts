@@ -1,16 +1,9 @@
+import { given } from './helper';
 import { priceFallen, removeFrom10 } from './mock/simple';
+
 test('toto', () => {
   expect(3).toBe(3);
 });
-
-class FakeBus implements IBus {
-
-  List<Event> publishedMessage;
-
-  publish(message: Event): Command[] {
-
-  }
-}
 
 given([pa])
   .when(priceRaised)
